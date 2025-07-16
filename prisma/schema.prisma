@@ -1,0 +1,167 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // If you want to use Prisma Accelerate for improved performance
+  directUrl = env("DIRECT_URL")
+}
+
+// Core Models
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  name          String?
+  password      String    // Hashed password
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  expenses      Expense[]
+  categories    Category[]
+  budgets       Budget[]
+  teams         TeamMember[]
+  recurringExpenses RecurringExpense[]
+
+  @@map("users")
+}
+
+model Expense {
+  id          String    @id @default(uuid())
+  amount      Decimal   @db.Decimal(10, 2)
+  description String
+  date        DateTime
+  receiptUrl  String?   @map("receipt_url")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  userId      String    @map("user_id")
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  categoryId  String    @map("category_id")
+  category    Category  @relation(fields: [categoryId], references: [id])
+
+  teamId      String?   @map("team_id")
+  team        Team?     @relation(fields: [teamId], references: [id])
+
+  @@map("expenses")
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String
+  color       String
+  icon        String?
+  isDefault   Boolean   @default(false) @map("is_default")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  userId      String?   @map("user_id")
+  user        User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  teamId      String?   @map("team_id")
+  team        Team?     @relation(fields: [teamId], references: [id])
+
+  expenses    Expense[]
+  budgets     Budget[]
+  recurringExpenses RecurringExpense[]
+
+  @@map("categories")
+}
+
+model Budget {
+  id          String    @id @default(uuid())
+  amount      Decimal   @db.Decimal(10, 2)
+  name        String
+  startDate   DateTime  @map("start_date")
+  endDate     DateTime  @map("end_date")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  userId      String    @map("user_id")
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  categoryId  String    @map("category_id")
+  category    Category  @relation(fields: [categoryId], references: [id])
+
+  teamId      String?   @map("team_id")
+  team        Team?     @relation(fields: [teamId], references: [id])
+
+  @@map("budgets")
+}
+
+model Team {
+  id          String    @id @default(uuid())
+  name        String
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  members     TeamMember[]
+  expenses    Expense[]
+  categories  Category[]
+  budgets     Budget[]
+
+  @@map("teams")
+}
+
+model TeamMember {
+  id          String    @id @default(uuid())
+  role        Role      @default(VIEWER)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  userId      String    @map("user_id")
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  teamId      String    @map("team_id")
+  team        Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, teamId])
+  @@map("team_members")
+}
+
+model RecurringExpense {
+  id          String    @id @default(uuid())
+  amount      Decimal   @db.Decimal(10, 2)
+  description String
+  frequency   Frequency
+  startDate   DateTime  @map("start_date")
+  endDate     DateTime? @map("end_date")
+  lastRun     DateTime? @map("last_run")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  userId      String    @map("user_id")
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  categoryId  String    @map("category_id")
+  category    Category  @relation(fields: [categoryId], references: [id])
+
+  @@map("recurring_expenses")
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+enum Frequency {
+  DAILY
+  WEEKLY
+  BIWEEKLY
+  MONTHLY
+  QUARTERLY
+  YEARLY
+}
