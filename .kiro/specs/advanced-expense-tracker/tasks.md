@@ -21,16 +21,16 @@
     - Implement protected routes and authentication hooks
     - _Requirements: 8.1, 8.2, 8.4_
 
-- [ ] 2. Core Data Models and Database Schema
+- [x] 2. Core Data Models and Database Schema
 
-  - [ ] 2.1 Implement User model and authentication
+  - [x] 2.1 Implement User model and authentication
 
     - Create User model in Prisma schema
     - Implement user registration and login functionality
     - Write tests for user authentication flows
     - _Requirements: 8.1, 8.2, 8.4_
 
-  - [ ] 2.2 Implement Category model and CRUD operations
+  - [x] 2.2 Implement Category model and CRUD operations
 
     - Create Category model in Prisma schema
     - Implement category creation, editing, and deletion
@@ -38,7 +38,7 @@
     - Write tests for category operations
     - _Requirements: 2.1, 2.2, 2.3, 2.4_
 
-  - [ ] 2.3 Implement Expense model and basic CRUD operations
+  - [x] 2.3 Implement Expense model and basic CRUD operations
     - Create Expense model in Prisma schema
     - Implement expense creation with required fields
     - Implement expense retrieval with filtering
@@ -222,7 +222,7 @@
   - [ ] 10.1 Implement global state management
 
     - Set up React Context for global state
-    - Implement SWR for data fetching and caching
+    - Implement Tanstack Query for data fetching and caching
     - Create shared hooks for common operations
     - Write tests for state management
     - _Requirements: All requirements for consistent UX_
