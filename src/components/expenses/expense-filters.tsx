@@ -64,14 +64,16 @@ export function ExpenseFilters({
         <div className="space-y-2">
           <Label htmlFor="category-filter">Category</Label>
           <Select
-            value={filters.categoryId}
-            onValueChange={(value) => handleFilterChange("categoryId", value)}
+            value={filters.categoryId || "all"}
+            onValueChange={(value) =>
+              handleFilterChange("categoryId", value === "all" ? "" : value)
+            }
           >
             <SelectTrigger id="category-filter">
               <SelectValue placeholder="All categories" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All categories</SelectItem>
+              <SelectItem value="all">All categories</SelectItem>
               {categories?.map((category: any) => (
                 <SelectItem key={category.id} value={category.id}>
                   <div className="flex items-center gap-2">

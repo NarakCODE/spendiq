@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -47,6 +47,7 @@ interface ExpenseListProps {
     sortBy: "date" | "amount" | "description" | "createdAt";
     sortOrder: "asc" | "desc";
   };
+  onEditExpense?: (expense: Expense) => void;
 }
 
 interface Expense {
@@ -84,7 +85,7 @@ interface ExpenseResponse {
   };
 }
 
-export function ExpenseList({ filters }: ExpenseListProps) {
+export function ExpenseList({ filters, onEditExpense }: ExpenseListProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const limit = 10;
 
@@ -116,9 +117,9 @@ export function ExpenseList({ filters }: ExpenseListProps) {
   });
 
   // Reset to page 1 when filters change
-  useState(() => {
+  useEffect(() => {
     setCurrentPage(1);
-  });
+  }, [filters]);
 
   const handleDeleteExpense = async (expenseId: string) => {
     try {
@@ -266,7 +267,11 @@ export function ExpenseList({ filters }: ExpenseListProps) {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem>Edit</DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => onEditExpense?.(expense)}
+                          >
+                            Edit
+                          </DropdownMenuItem>
                           <DropdownMenuItem>Duplicate</DropdownMenuItem>
                           {expense.receiptUrl && (
                             <DropdownMenuItem>View Receipt</DropdownMenuItem>

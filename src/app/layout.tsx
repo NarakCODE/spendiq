@@ -32,7 +32,14 @@ export default function RootLayout({
       >
         <QueryProvider>
           <AuthSessionProvider>
-            <ThemeProvider>{children}</ThemeProvider>
+            <ThemeProvider
+              attribute={"class"}
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {children}
+            </ThemeProvider>
           </AuthSessionProvider>
         </QueryProvider>
       </body>

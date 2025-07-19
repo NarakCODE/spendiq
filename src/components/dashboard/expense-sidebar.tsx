@@ -48,12 +48,12 @@ export function ExpenseSidebar({ ...props }: ExpenseSidebarProps) {
     ? {
         name: session.user.name || "User",
         email: session.user.email || "",
-        avatar: session.user.image || "/avatars/default.jpg",
+        avatar: session.user.image || "/avatars/male-01.svg",
       }
     : {
         name: "Loading...",
         email: "",
-        avatar: "/avatars/default.jpg",
+        avatar: "/avatars/male-01.svg",
       };
 
   // Loading state

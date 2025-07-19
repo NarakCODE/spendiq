@@ -28,31 +28,31 @@ export const navigationConfig = {
     },
     {
       title: "Expenses",
-      url: "/expenses",
+      url: "/dashboard/expenses",
       icon: IconReceipt,
       description: "Manage your expense records",
     },
     {
       title: "Categories",
-      url: "/categories",
+      url: "/dashboard/categories",
       icon: IconTags,
       description: "Organize expenses by category",
     },
     {
       title: "Budgets",
-      url: "/budgets",
+      url: "/dashboard/budgets",
       icon: IconWallet,
       description: "Track your spending limits",
     },
     {
       title: "Analytics",
-      url: "/analytics",
+      url: "/dashboard/analytics",
       icon: IconChartBar,
       description: "Insights and spending trends",
     },
     {
       title: "Teams",
-      url: "/teams",
+      url: "/dashboard/teams",
       icon: IconUsers,
       description: "Collaborate with team members",
     },
@@ -60,12 +60,12 @@ export const navigationConfig = {
   navSecondary: [
     {
       title: "Settings",
-      url: "/settings",
+      url: "/dashboard/settings",
       icon: IconSettings,
     },
     {
       title: "Help",
-      url: "/help",
+      url: "/dashboard/help",
       icon: IconHelp,
     },
   ] as NavItem[],

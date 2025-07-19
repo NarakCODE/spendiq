@@ -1,10 +1,11 @@
 import { z } from "zod";
 
-// Constants for validation limits
-const VALIDATION_LIMITS = {
+// Centralized validation constants
+export const EXPENSE_VALIDATION = {
   AMOUNT: {
     MIN: 0.01,
     MAX: 99999999.99,
+    MAX_DECIMAL_PLACES: 2,
   },
   DESCRIPTION: {
     MIN: 1,
@@ -22,40 +23,119 @@ const VALIDATION_LIMITS = {
 } as const;
 
 // Reusable field validators
-const amountValidator = z
+export const amountValidator = z
   .number()
-  .min(VALIDATION_LIMITS.AMOUNT.MIN, "Amount must be at least $0.01")
-  .max(VALIDATION_LIMITS.AMOUNT.MAX, "Amount cannot exceed $99,999,999.99")
-  .multipleOf(0.01, "Amount must have at most 2 decimal places");
-
-const descriptionValidator = z
-  .string()
-  .trim()
-  .min(VALIDATION_LIMITS.DESCRIPTION.MIN, "Description is required")
+  .min(
+    EXPENSE_VALIDATION.AMOUNT.MIN,
+    `Amount must be at least $${EXPENSE_VALIDATION.AMOUNT.MIN}`
+  )
   .max(
-    VALIDATION_LIMITS.DESCRIPTION.MAX,
-    "Description cannot exceed 500 characters"
+    EXPENSE_VALIDATION.AMOUNT.MAX,
+    `Amount cannot exceed $${EXPENSE_VALIDATION.AMOUNT.MAX.toLocaleString()}`
+  )
+  .multipleOf(
+    0.01,
+    `Amount can have at most ${EXPENSE_VALIDATION.AMOUNT.MAX_DECIMAL_PLACES} decimal places`
   );
 
-const categoryIdValidator = z.string().uuid("Invalid category ID");
-
-const dateValidator = z
+// String amount validator for forms
+export const amountStringValidator = z
   .string()
-  .datetime("Invalid date format")
+  .min(1, "Amount is required")
+  .refine((val) => {
+    const num = parseFloat(val);
+    return !isNaN(num) && num > 0;
+  }, "Please enter a valid amount")
+  .refine((val) => {
+    const num = parseFloat(val);
+    return num >= EXPENSE_VALIDATION.AMOUNT.MIN;
+  }, `Amount must be at least $${EXPENSE_VALIDATION.AMOUNT.MIN}`)
+  .refine((val) => {
+    const num = parseFloat(val);
+    return num <= EXPENSE_VALIDATION.AMOUNT.MAX;
+  }, `Amount cannot exceed $${EXPENSE_VALIDATION.AMOUNT.MAX.toLocaleString()}`)
+  .refine((val) => {
+    const decimalPart = val.split(".")[1];
+    return (
+      !decimalPart ||
+      decimalPart.length <= EXPENSE_VALIDATION.AMOUNT.MAX_DECIMAL_PLACES
+    );
+  }, `Amount can have at most ${EXPENSE_VALIDATION.AMOUNT.MAX_DECIMAL_PLACES} decimal places`);
+
+export const descriptionValidator = z
+  .string()
+  .trim()
+  .min(EXPENSE_VALIDATION.DESCRIPTION.MIN, "Description is required")
+  .max(
+    EXPENSE_VALIDATION.DESCRIPTION.MAX,
+    `Description cannot exceed ${EXPENSE_VALIDATION.DESCRIPTION.MAX} characters`
+  )
+  .refine((val) => val.trim().length > 0, "Description cannot be empty");
+
+// Date validator for API (string format)
+export const dateStringValidator = z
+  .string()
+  .refine((val) => {
+    try {
+      const date = new Date(val);
+      return !isNaN(date.getTime()) && val.includes("T") && val.includes("Z");
+    } catch {
+      return false;
+    }
+  }, "Invalid date format")
   .refine((date) => {
     const expenseDate = new Date(date);
     const now = new Date();
-    // Allow expenses up to current date/time
     return expenseDate <= now;
   }, "Expense date cannot be in the future");
 
-const receiptUrlValidator = z
+// Date validator for forms (Date object)
+export const dateValidator = z
+  .date({ message: "Please select a valid date" })
+  .refine((date) => {
+    const now = new Date();
+    now.setHours(23, 59, 59, 999);
+    return date <= now;
+  }, "Expense date cannot be in the future");
+
+export const receiptUrlValidator = z
   .string()
-  .url("Invalid receipt URL")
-  .max(VALIDATION_LIMITS.RECEIPT_URL_MAX_LENGTH, "Receipt URL too long")
+  .refine((val) => {
+    try {
+      new URL(val);
+      return true;
+    } catch {
+      return false;
+    }
+  }, "Invalid receipt URL")
+  .max(EXPENSE_VALIDATION.RECEIPT_URL_MAX_LENGTH, "Receipt URL too long")
   .optional();
 
-const teamIdValidator = z.string().uuid("Invalid team ID").optional();
+// Reusable UUID validator
+const uuidValidator = (fieldName: string) =>
+  z
+    .string()
+    .regex(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+      `Invalid ${fieldName}`
+    );
+
+export const categoryIdValidator = uuidValidator("category ID");
+export const teamIdValidator = uuidValidator("team ID").optional();
+
+// Reusable date string validator for query parameters
+const dateStringQueryValidator = (fieldName: string) =>
+  z
+    .string()
+    .refine((val) => {
+      try {
+        const date = new Date(val);
+        return !isNaN(date.getTime()) && val.includes("T");
+      } catch {
+        return false;
+      }
+    }, `Invalid ${fieldName} format`)
+    .optional();
 
 // Positive integer validator for pagination
 const positiveIntegerString = (fieldName: string, min: number, max: number) =>
@@ -68,22 +148,31 @@ const positiveIntegerString = (fieldName: string, min: number, max: number) =>
       `${fieldName} must be between ${min} and ${max}`
     );
 
-// Expense creation schema
+// Form schema for client-side validation (uses string amount and Date object)
+export const expenseFormSchema = z.object({
+  amount: amountStringValidator,
+  description: descriptionValidator,
+  categoryId: categoryIdValidator,
+  date: dateValidator,
+  teamId: z.string().optional(),
+});
+
+// API schema for expense creation (uses number amount and string date)
 export const createExpenseSchema = z.object({
   amount: amountValidator,
   description: descriptionValidator,
   categoryId: categoryIdValidator,
-  date: dateValidator,
+  date: dateStringValidator,
   receiptUrl: receiptUrlValidator,
   teamId: teamIdValidator,
 });
 
-// Expense update schema (all fields optional)
+// API schema for expense updates (all fields optional)
 export const updateExpenseSchema = z.object({
   amount: amountValidator.optional(),
   description: descriptionValidator.optional(),
   categoryId: categoryIdValidator.optional(),
-  date: dateValidator.optional(),
+  date: dateStringValidator.optional(),
   receiptUrl: receiptUrlValidator.nullable(),
   teamId: teamIdValidator.nullable(),
 });
@@ -93,22 +182,22 @@ export const expenseQuerySchema = z
   .object({
     page: positiveIntegerString(
       "Page",
-      VALIDATION_LIMITS.PAGINATION.MIN_PAGE,
-      VALIDATION_LIMITS.PAGINATION.MAX_PAGE
+      EXPENSE_VALIDATION.PAGINATION.MIN_PAGE,
+      EXPENSE_VALIDATION.PAGINATION.MAX_PAGE
     )
       .optional()
-      .default(VALIDATION_LIMITS.PAGINATION.DEFAULT_PAGE.toString()),
+      .default(EXPENSE_VALIDATION.PAGINATION.DEFAULT_PAGE),
     limit: positiveIntegerString(
       "Limit",
-      VALIDATION_LIMITS.PAGINATION.MIN_LIMIT,
-      VALIDATION_LIMITS.PAGINATION.MAX_LIMIT
+      EXPENSE_VALIDATION.PAGINATION.MIN_LIMIT,
+      EXPENSE_VALIDATION.PAGINATION.MAX_LIMIT
     )
       .optional()
-      .default(VALIDATION_LIMITS.PAGINATION.DEFAULT_LIMIT.toString()),
-    categoryId: z.string().uuid("Invalid category ID").optional(),
-    teamId: z.string().uuid("Invalid team ID").optional(),
-    startDate: z.string().datetime("Invalid start date format").optional(),
-    endDate: z.string().datetime("Invalid end date format").optional(),
+      .default(EXPENSE_VALIDATION.PAGINATION.DEFAULT_LIMIT),
+    categoryId: uuidValidator("category ID").optional(),
+    teamId: uuidValidator("team ID").optional(),
+    startDate: dateStringQueryValidator("start date"),
+    endDate: dateStringQueryValidator("end date"),
     sortBy: z
       .enum(["date", "amount", "description", "createdAt"])
       .optional()

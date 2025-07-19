@@ -46,8 +46,9 @@
     - Write tests for expense CRUD operations
     - _Requirements: 1.1, 1.2, 1.3, 1.4_
 
-- [ ] 3. Expense Management Features
-- - [ ] 3.1 Implement expense listing with filters and pagination
+- [-] 3. Expense Management Features
+
+- - [x] 3.1 Implement expense listing with filters and pagination
 
     - Create expense list component with sorting options
     - Implement category filtering functionality

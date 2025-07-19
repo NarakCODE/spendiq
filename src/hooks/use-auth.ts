@@ -1,21 +1,21 @@
-'use client'
+"use client";
 
-import { useSession } from 'next-auth/react'
-import { useQuery } from '@tanstack/react-query'
+import { useSession } from "next-auth/react";
+import { useQuery } from "@tanstack/react-query";
 
 interface User {
-  id: string
-  email: string
-  name?: string | null
-  createdAt: string
-  updatedAt: string
+  id: string;
+  email: string;
+  name?: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface UseAuthReturn {
-  user: User | null
-  isAuthenticated: boolean
-  isLoading: boolean
-  error: Error | null
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  error: Error | null;
 }
 
 interface UseOptionalAuthReturn extends UseAuthReturn {
@@ -24,9 +24,9 @@ interface UseOptionalAuthReturn extends UseAuthReturn {
 
 // Query key factory for auth-related queries
 export const authKeys = {
-  all: ['auth'] as const,
-  profile: () => [...authKeys.all, 'profile'] as const,
-}
+  all: ["auth"] as const,
+  profile: () => [...authKeys.all, "profile"] as const,
+};
 
 /**
  * Hook for components that require authentication
@@ -35,7 +35,7 @@ export const authKeys = {
 export function useAuth(): UseAuthReturn {
   const { data: session, status } = useSession({
     required: true,
-  })
+  });
 
   const {
     data: user,
@@ -44,23 +44,23 @@ export function useAuth(): UseAuthReturn {
   } = useQuery({
     queryKey: authKeys.profile(),
     queryFn: async (): Promise<User> => {
-      const response = await fetch('/api/user/profile')
+      const response = await fetch("/api/user/profile");
       if (!response.ok) {
-        throw new Error('Failed to fetch user profile')
+        throw new Error("Failed to fetch user profile");
       }
-      const data = await response.json()
-      return data.user
+      const data = await response.json();
+      return data.user;
     },
     enabled: !!session?.user?.id,
     staleTime: 5 * 60 * 1000, // 5 minutes
-  })
+  });
 
   return {
     user: user || null,
     isAuthenticated: !!session?.user,
-    isLoading: status === 'loading' || isUserLoading,
+    isLoading: status === "loading" || isUserLoading,
     error: error as Error | null,
-  }
+  };
 }
 
 /**
@@ -68,7 +68,7 @@ export function useAuth(): UseAuthReturn {
  * Will not redirect if not authenticated
  */
 export function useOptionalAuth(): UseOptionalAuthReturn {
-  const { data: session, status } = useSession()
+  const { data: session, status } = useSession();
 
   const {
     data: user,
@@ -77,21 +77,21 @@ export function useOptionalAuth(): UseOptionalAuthReturn {
   } = useQuery({
     queryKey: authKeys.profile(),
     queryFn: async (): Promise<User> => {
-      const response = await fetch('/api/user/profile')
+      const response = await fetch("/api/user/profile");
       if (!response.ok) {
-        throw new Error('Failed to fetch user profile')
+        throw new Error("Failed to fetch user profile");
       }
-      const data = await response.json()
-      return data.user
+      const data = await response.json();
+      return data.user;
     },
     enabled: !!session?.user?.id,
     staleTime: 5 * 60 * 1000, // 5 minutes
-  })
+  });
 
   return {
     user: user || null,
     isAuthenticated: !!session?.user,
-    isLoading: status === 'loading' || (!!session?.user && isUserLoading),
+    isLoading: status === "loading" || (!!session?.user && isUserLoading),
     error: error as Error | null,
-  }
+  };
 }

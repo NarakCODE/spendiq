@@ -11,6 +11,7 @@ export function createMockSession(overrides: Partial<Session> = {}): Session {
       id: "user-1",
       email: "test@example.com",
       name: "Test User",
+      image: "/avatars/male-01.svg",
       ...overrides.user,
     },
     expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 1 day from now
@@ -56,6 +57,7 @@ export function createMockUser(
     id: "user-123",
     email: "test@example.com",
     name: "Test User",
+    image: "/avatars/male-01.svg",
     ...overrides,
   };
 }
