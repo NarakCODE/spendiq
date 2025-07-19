@@ -39,7 +39,7 @@ The Advanced Expense Tracker is a comprehensive web application built with Next.
 1. WHEN a user selects a date range THEN the system SHALL display expenses within that range
 2. WHEN a user selects preset date ranges (this month, last month, this year) THEN the system SHALL apply the appropriate filters
 3. WHEN a user clears date filters THEN the system SHALL display all expenses
-4. IF an invalid date range is entered THEN the system SHALL display an error message
+4. IF an invalid date range is entered THEN the system SHALL disp   lay an error message
 5. WHEN date filters are combined with other filters THEN the system SHALL apply all filters simultaneously
 
 ### Requirement 4

@@ -29,7 +29,7 @@ graph TB
 - **Frontend**: Next.js 14 with App Router, React 18, Tailwind CSS
 - **Backend**: Next.js API Routes, Prisma ORM
 - **Database**: PostgreSQL with connection pooling
-- **Authenticatio: NextAuth.js with JWT tokens
+- \*\*Authenticatio: NextAuth.js with JWT tokens
 - **File Storage**: Local file system with organized directory structure
 - **Charts**: Chart.js or Recharts for data visualization
 - **Background Processing**: Node.js cron jobs for recurring expenses
@@ -39,111 +39,118 @@ graph TB
 ### Core Data Models
 
 #### User Model
+
 ```typescript
 interface User {
-  id: string
-  email: string
-  name: string
-  createdAt: Date
-  updatedAt: Date
-  teams: TeamMember[]
-  expenses: Expense[]
+  id: string;
+  email: string;
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+  teams: TeamMember[];
+  expenses: Expense[];
 }
 ```
 
 #### Expense Model
+
 ```typescript
 interface Expense {
-  id: string
-  amount: number
-  description: string
-  categoryId: string
-  category: Category
-  date: Date
-  receiptUrl?: string
-  userId: string
-  user: User
-  teamId?: string
-  team?: Team
-  recurringExpenseId?: string
-  createdAt: Date
-  updatedAt: Date
+  id: string;
+  amount: number;
+  description: string;
+  categoryId: string;
+  category: Category;
+  date: Date;
+  receiptUrl?: string;
+  userId: string;
+  user: User;
+  teamId?: string;
+  team?: Team;
+  recurringExpenseId?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 ```
 
 #### Category Model
+
 ```typescript
 interface Category {
-  id: string
-  name: string
-  color: string
-  isDefault: boolean
-  userId?: string
-  teamId?: string
-  expenses: Expense[]
+  id: string;
+  name: string;
+  color: string;
+  isDefault: boolean;
+  userId?: string;
+  teamId?: string;
+  expenses: Expense[];
 }
 ```
 
 #### Budget Model
+
 ```typescript
 interface Budget {
-  id: string
-  name: string
-  amount: number
-  categoryId?: string
-  category?: Category
-  startDate: Date
-  endDate: Date
-  userId: string
-  teamId?: string
-  spent: number
-  createdAt: Date
-  updatedAt: Date
+  id: string;
+  name: string;
+  amount: number;
+  categoryId?: string;
+  category?: Category;
+  startDate: Date;
+  endDate: Date;
+  userId: string;
+  teamId?: string;
+  spent: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 ```
 
 #### Team and Collaboration Models
+
 ```typescript
 interface Team {
-  id: string
-  name: string
-  createdAt: Date
-  members: TeamMember[]
-  expenses: Expense[]
-  budgets: Budget[]
+  id: string;
+  name: string;
+  createdAt: Date;
+  members: TeamMember[];
+  expenses: Expense[];
+  budgets: Budget[];
 }
 
 interface TeamMember {
-  id: string
-  userId: string
-  user: User
-  teamId: string
-  team: Team
-  role: 'ADMIN' | 'EDITOR' | 'VIEWER'
-  joinedAt: Date
+  id: string;
+  userId: string;
+  user: User;
+  teamId: string;
+  team: Team;
+  role: "ADMIN" | "EDITOR" | "VIEWER";
+  joinedAt: Date;
 }
 ```
 
 #### Recurring Expense Model
+
 ```typescript
 interface RecurringExpense {
-  id: string
-  amount: number
-  description: string
-  categoryId: string
-  frequency: 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY'
-  nextDueDate: Date
-  isActive: boolean
-  userId: string
-  teamId?: string
-  createdAt: Date
-  updatedAt: Date
+  id: string;
+  amount: number;
+  description: string;
+  categoryId: string;
+  frequency: "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
+  nextDueDate: Date;
+  isActive: boolean;
+  userId: string;
+  teamId?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 ```
 
 ### API Endpoints
 
 #### Expense Management
+
 - `GET /api/expenses` - List expenses with filtering and pagination
 - `POST /api/expenses` - Create new expense
 - `PUT /api/expenses/[id]` - Update expense
@@ -151,18 +158,21 @@ interface RecurringExpense {
 - `POST /api/expenses/[id]/receipt` - Upload receipt
 
 #### Category Management
+
 - `GET /api/categories` - List categories
 - `POST /api/categories` - Create category
 - `PUT /api/categories/[id]` - Update category
 - `DELETE /api/categories/[id]` - Delete category
 
 #### Budget Management
+
 - `GET /api/budgets` - List budgets
 - `POST /api/budgets` - Create budget
 - `PUT /api/budgets/[id]` - Update budget
 - `DELETE /api/budgets/[id]` - Delete budget
 
 #### Team Collaboration
+
 - `GET /api/teams` - List user's teams
 - `POST /api/teams` - Create team
 - `POST /api/teams/[id]/invite` - Invite team member
@@ -170,6 +180,7 @@ interface RecurringExpense {
 - `DELETE /api/teams/[id]/members/[userId]` - Remove member
 
 #### Analytics and Insights
+
 - `GET /api/analytics/dashboard` - Dashboard data
 - `GET /api/analytics/insights` - Smart insights
 - `GET /api/analytics/export` - CSV export
@@ -177,6 +188,7 @@ interface RecurringExpense {
 ### Frontend Components Architecture
 
 #### Page Components
+
 - `app/dashboard/page.tsx` - Main dashboard with charts
 - `app/expenses/page.tsx` - Expense list and management
 - `app/budgets/page.tsx` - Budget tracking
@@ -184,6 +196,7 @@ interface RecurringExpense {
 - `app/settings/page.tsx` - User settings
 
 #### Shared Components
+
 - `components/ui/` - Reusable UI components (buttons, forms, modals)
 - `components/charts/` - Chart components for analytics
 - `components/expense/` - Expense-specific components
@@ -191,8 +204,9 @@ interface RecurringExpense {
 - `components/team/` - Team collaboration components
 
 #### State Management
+
 - React Context for global state (user, current team)
-- SWR for server state management and caching
+- Tanstack Query for data fetching and caching
 - Local state with useState/useReducer for component-specific state
 
 ## Data Models
@@ -200,6 +214,7 @@ interface RecurringExpense {
 ### Database Schema Design
 
 #### Core Tables
+
 ```sql
 -- Users table
 CREATE TABLE users (
@@ -253,6 +268,7 @@ CREATE TABLE budgets (
 ```
 
 #### Team Collaboration Tables
+
 ```sql
 -- Teams table
 CREATE TABLE teams (
@@ -288,6 +304,7 @@ CREATE TABLE recurring_expenses (
 ```
 
 ### Indexes for Performance
+
 ```sql
 -- Expense queries optimization
 CREATE INDEX idx_expenses_user_date ON expenses(user_id, date DESC);
@@ -302,16 +319,18 @@ CREATE INDEX idx_budgets_team_dates ON budgets(team_id, start_date, end_date);
 ## Error Handling
 
 ### API Error Responses
+
 ```typescript
 interface ApiError {
-  error: string
-  message: string
-  statusCode: number
-  details?: any
+  error: string;
+  message: string;
+  statusCode: number;
+  details?: any;
 }
 ```
 
 ### Error Categories
+
 1. **Validation Errors** (400) - Invalid input data
 2. **Authentication Errors** (401) - Invalid or missing authentication
 3. **Authorization Errors** (403) - Insufficient permissions
@@ -319,6 +338,7 @@ interface ApiError {
 5. **Server Errors** (500) - Internal server errors
 
 ### Frontend Error Handling
+
 - Global error boundary for unhandled React errors
 - Toast notifications for user-facing errors
 - Retry mechanisms for network failures
@@ -327,22 +347,26 @@ interface ApiError {
 ## Testing Strategy
 
 ### Unit Testing
+
 - **Models**: Test data validation and business logic
 - **API Routes**: Test endpoint functionality and error handling
 - **Components**: Test rendering and user interactions
 - **Utilities**: Test helper functions and calculations
 
 ### Integration Testing
+
 - **Database Operations**: Test CRUD operations with real database
 - **API Integration**: Test full request/response cycles
 - **Authentication Flow**: Test login/logout and protected routes
 
 ### End-to-End Testing
+
 - **User Workflows**: Test complete user journeys
 - **Team Collaboration**: Test multi-user scenarios
 - **Data Export**: Test CSV generation and download
 
 ### Testing Tools
+
 - **Unit/Integration**: Jest + React Testing Library
 - **E2E**: Playwright or Cypress
 - **Database**: Test database with Docker for isolation
@@ -351,18 +375,21 @@ interface ApiError {
 ### Performance Considerations
 
 #### Database Optimization
+
 - Connection pooling for PostgreSQL
 - Proper indexing for common queries
 - Pagination for large datasets
 - Query optimization for dashboard analytics
 
 #### Frontend Performance
+
 - Code splitting with Next.js dynamic imports
 - Image optimization for receipts
 - Lazy loading for charts and heavy components
-- SWR caching for frequently accessed data
+- Tanstack Query caching for frequently accessed data
 
 #### File Storage
+
 - Organized directory structure for receipts
 - File size limits and validation
 - Cleanup of orphaned files

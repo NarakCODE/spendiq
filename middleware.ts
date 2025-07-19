@@ -1,39 +1,42 @@
-import { withAuth } from 'next-auth/middleware'
+import { withAuth } from "next-auth/middleware";
 
 export default withAuth(
-  function middleware(req) {
+  function middleware() {
     // Add any additional middleware logic here if needed
   },
   {
     callbacks: {
       authorized: ({ token, req }) => {
         // Define which routes require authentication
-        const { pathname } = req.nextUrl
+        const { pathname } = req.nextUrl;
 
         // Public routes that don't require authentication
         const publicRoutes = [
-          '/',
-          '/auth/signin',
-          '/auth/signup',
-          '/api/auth/register'
-        ]
+          "/",
+          "/auth/signin",
+          "/auth/signup",
+          "/api/auth/register",
+        ];
 
         // API routes that require authentication
-        if (pathname.startsWith('/api/') && !pathname.startsWith('/api/auth/')) {
-          return !!token
+        if (
+          pathname.startsWith("/api/") &&
+          !pathname.startsWith("/api/auth/")
+        ) {
+          return !!token;
         }
 
         // Check if current path is public
         if (publicRoutes.includes(pathname)) {
-          return true
+          return true;
         }
 
         // All other routes require authentication
-        return !!token
+        return !!token;
       },
     },
   }
-)
+);
 
 export const config = {
   matcher: [
@@ -44,6 +47,6 @@ export const config = {
      * - favicon.ico (favicon file)
      * - public folder
      */
-    '/((?!_next/static|_next/image|favicon.ico|public/).*)',
+    "/((?!_next/static|_next/image|favicon.ico|public/).*)",
   ],
-}
+};

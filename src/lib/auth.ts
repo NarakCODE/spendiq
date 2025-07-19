@@ -9,6 +9,7 @@ const prisma = new PrismaClient()
 declare module 'next-auth' {
   interface Session {
     user: {
+      image: string
       id: string
       email: string
       name?: string | null

@@ -2,9 +2,8 @@ import { z } from "zod";
 
 // Reusable validation schemas
 const emailSchema = z
-  .string()
+  .email()
   .min(1, "Email is required")
-  .email({ message: "Please enter a valid email address" })
   .max(255, "Email is too long");
 
 const passwordSchema = z
