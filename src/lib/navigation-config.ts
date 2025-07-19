@@ -80,10 +80,7 @@ export const navigationConfig = {
 export function isNavItemActive(itemUrl: string, currentPath: string): boolean {
   // Exact match for root paths
   if (itemUrl === "/" || itemUrl === "/dashboard") {
-    return (
-      currentPath === itemUrl ||
-      (itemUrl === "/dashboard" && currentPath === "/")
-    );
+    return currentPath === itemUrl;
   }
 
   // For other paths, check if current path starts with the item URL
